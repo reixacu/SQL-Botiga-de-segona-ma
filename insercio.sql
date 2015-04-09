@@ -366,3 +366,18 @@ FOREIGN KEY(Mail_usu) REFERENCES usuaris_online(Mail_usu);
 ALTER TABLE vendes_online
 ADD CONSTRAINT veo_ID_dir_fk
 FOREIGN KEY(ID_dir) REFERENCES direccions_online(ID_dir);
+
+
+/* ********** VISTES ********** */
+
+CREATE VIEW Botiga_Beneficis_vu
+AS SELECT b.ID_bot ID_Botiga, SUM((a.preu_venda_art - a.preu_compra_art)) Benefici
+FROM botigues b, articles a
+GROUP BY b.ID_bot, a.ID_bot
+HAVING b.ID_bot = a.ID_bot;
+
+CREATE VIEW Vendes_Preus_vu 
+AS SELECT c.ID_com "Nº Vendes", SUM(a.preu_venda_art) "Total Preu Sense IVA", SUM(a.preu_venda_art)+(SUM(a.preu_venda_art)*(SELECT Percentatge_iva FROM iva WHERE ID_iva = 1)/100) "Total Preu amb IVA"
+FROM articles a, compres c, iva i
+GROUP BY c.ID_com, a.ID_Com
+HAVING c.ID_com = a.ID_Com;
